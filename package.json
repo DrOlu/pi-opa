@@ -1,0 +1,81 @@
+{
+  "name": "pi-opa",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Open Policy Agent (OPA) integration for pi coding agent - comprehensive authorization, authentication, and policy enforcement",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "policies/**/*"
+  ],
+  "scripts": {
+    "build": "tsc && npm run build:cjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json && mv dist/cjs/index.js dist/index.cjs",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest"
+  },
+  "keywords": [
+    "pi",
+    "pi-extension",
+    "pi-package",
+    "opa",
+    "open-policy-agent",
+    "authorization",
+    "authz",
+    "policy",
+    "rego",
+    "enterprise",
+    "security",
+    "access-control",
+    "rbac",
+    "abac",
+    "audit"
+  ],
+  "author": "pi-extensions <extensions@pi.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrOlu/pi-opa.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DrOlu/pi-opa/issues"
+  },
+  "homepage": "https://github.com/DrOlu/pi-opa#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "pi": {
+    "extensions": ["./dist/index.js"]
+  },
+  "peerDependencies": {
+    "pi-a2a-communication": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "pi-a2a-communication": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

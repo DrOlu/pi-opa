@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "baseUrl": ".",
+    "paths": {
+      "@mariozechner/pi-coding-agent": ["./types/pi-runtime.d.ts"],
+      "@mariozechner/pi-ai": ["./types/pi-runtime.d.ts"],
+      "@mariozechner/pi-tui": ["./types/pi-runtime.d.ts"],
+      "@mariozechner/pi-agent-core": ["./types/pi-runtime.d.ts"]
+    }
+  },
+  "include": [
+    "*.ts",
+    "types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
