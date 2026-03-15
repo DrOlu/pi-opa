@@ -77,14 +77,41 @@ export class OPACLient {
       });
 
       let started = false;
+      let healthCheckInterval: NodeJS.Timeout | null = null;
 
-      // Wait for server to be ready
+      // Health check polling - most reliable method
+      const startHealthCheck = () => {
+        healthCheckInterval = setInterval(async () => {
+          if (started) {
+            if (healthCheckInterval) clearInterval(healthCheckInterval);
+            return;
+          }
+          try {
+            const response = await fetch(`${this.serverUrl}/health`);
+            if (response.ok) {
+              started = true;
+              this.isRunning = true;
+              if (healthCheckInterval) clearInterval(healthCheckInterval);
+              resolve();
+            }
+          } catch {
+            // Health check failed, server not ready yet
+          }
+        }, 100); // Check every 100ms
+      };
+
+      // Start health check polling after a short delay to let OPA start
+      setTimeout(startHealthCheck, 500);
+
+      // Backup: Log-based detection
       this.serverProcess.stdout?.on("data", (data: Buffer) => {
         const output = data.toString();
+        // Support both old and new OPA log messages
         if (output.includes("Server initialized") || output.includes("Server is initialized") || output.includes("Listening")) {
           if (!started) {
             started = true;
             this.isRunning = true;
+            if (healthCheckInterval) clearInterval(healthCheckInterval);
             resolve();
           }
         }
@@ -93,24 +120,29 @@ export class OPACLient {
       this.serverProcess.stderr?.on("data", (data: Buffer) => {
         const output = data.toString();
         // OPA logs to stderr - check for server ready signal
+        // Support both old and new OPA log messages
         if (!started && (output.includes("Server initialized") || output.includes("Server is initialized") || output.includes("Listening"))) {
           started = true;
           this.isRunning = true;
+          if (healthCheckInterval) clearInterval(healthCheckInterval);
           resolve();
         }
         if (!started && output.includes("error")) {
+          if (healthCheckInterval) clearInterval(healthCheckInterval);
           reject(new Error(`OPA server failed to start: ${output}`));
         }
       });
 
       this.serverProcess.on("error", (error) => {
         if (!started) {
+          if (healthCheckInterval) clearInterval(healthCheckInterval);
           reject(new Error(`Failed to start OPA server: ${error.message}`));
         }
       });
 
       this.serverProcess.on("exit", (code) => {
         if (!started) {
+          if (healthCheckInterval) clearInterval(healthCheckInterval);
           reject(new Error(`OPA server exited with code ${code}`));
         } else {
           this.isRunning = false;
@@ -121,6 +153,7 @@ export class OPACLient {
       // Timeout after 30 seconds
       setTimeout(() => {
         if (!started) {
+          if (healthCheckInterval) clearInterval(healthCheckInterval);
           this.serverProcess?.kill();
           reject(new Error("OPA server start timeout"));
         }
