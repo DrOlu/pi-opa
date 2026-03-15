@@ -1,6 +1,6 @@
 {
   "name": "pi-opa",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Enterprise-grade Open Policy Agent (OPA) integration for pi coding agent - comprehensive authorization, authentication, and policy enforcement",
   "type": "module",
   "main": "dist/index.js",

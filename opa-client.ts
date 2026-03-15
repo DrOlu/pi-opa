@@ -81,7 +81,7 @@ export class OPACLient {
       // Wait for server to be ready
       this.serverProcess.stdout?.on("data", (data: Buffer) => {
         const output = data.toString();
-        if (output.includes("Server is initialized") || output.includes("Listening")) {
+        if (output.includes("Server initialized") || output.includes("Server is initialized") || output.includes("Listening")) {
           if (!started) {
             started = true;
             this.isRunning = true;
@@ -92,6 +92,12 @@ export class OPACLient {
 
       this.serverProcess.stderr?.on("data", (data: Buffer) => {
         const output = data.toString();
+        // OPA logs to stderr - check for server ready signal
+        if (!started && (output.includes("Server initialized") || output.includes("Server is initialized") || output.includes("Listening"))) {
+          started = true;
+          this.isRunning = true;
+          resolve();
+        }
         if (!started && output.includes("error")) {
           reject(new Error(`OPA server failed to start: ${output}`));
         }
